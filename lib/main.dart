@@ -5,8 +5,6 @@ import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
-import 'dart:developer' as devtools show log;
-
 
 void main() {
   runApp(
@@ -19,7 +17,8 @@ void main() {
       routes: {
         '/login/': (context) => const LoginView(),
         '/register/': (context) => const RegisterView(),
-      }
+        '/notes/': (context) => NotesView(),
+      },
     ),
   );
 }
@@ -30,12 +29,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Firebase.initializeApp(
-                  options: DefaultFirebaseOptions.currentPlatform
-                ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      ),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
@@ -45,12 +44,12 @@ class HomePage extends StatelessWidget {
               }
             } else {
               return const LoginView();
-            } 
-            default:
-              return const CircularProgressIndicator();
-          }
+            }
+          default:
+            return const CircularProgressIndicator();
         }
-      );
+      },
+    );
   }
 }
 
@@ -77,16 +76,15 @@ class _NotesViewState extends State<NotesView> {
                   final shouldLogout = await showLogoutDialog(context);
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
-                    if( context.mounted ) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login/', 
-                        (_) => false,
-                      );
+                    if (context.mounted) {
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/login/', (_) => false);
                     }
                   }
                   break;
               }
-            }, 
+            },
             itemBuilder: (context) {
               return const [
                 PopupMenuItem<MenuAction>(
@@ -95,7 +93,7 @@ class _NotesViewState extends State<NotesView> {
                 ),
               ];
             },
-          )
+          ),
         ],
       ),
       body: const Text('Hello world'),
@@ -105,7 +103,7 @@ class _NotesViewState extends State<NotesView> {
 
 Future<bool> showLogoutDialog(BuildContext context) {
   return showDialog<bool>(
-    context: context, 
+    context: context,
     builder: (context) {
       return AlertDialog(
         title: const Text('Sign out'),
@@ -114,17 +112,17 @@ Future<bool> showLogoutDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(false);
-            }, 
-            child: const Text('Cancel')
-            ),
+            },
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true);
-            }, 
-            child: const Text('Log out')
-            )  
+            },
+            child: const Text('Log out'),
+          ),
         ],
       );
-    }
-  ).then((value) => value ?? false );
+    },
+  ).then((value) => value ?? false);
 }
