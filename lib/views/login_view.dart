@@ -67,9 +67,16 @@ class _LoginViewState extends State<LoginView> {
                   ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 }
               } on FirebaseAuthException catch (e) {
-                final errorMessage = e.message.toString();
                 if (context.mounted) {
-                  await showErrorDialog(context, errorMessage);
+                  if (e.code == 'invalid-credential') {
+                    final errorMessage = e.message.toString();
+                    await showErrorDialog(context, errorMessage);
+                  } else {
+                    await showErrorDialog(
+                      context,
+                      'Error: ${e.code.toString()}',
+                    );
+                  }
                 }
               } catch (e) {
                 final errorMessage = e.toString();
