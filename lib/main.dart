@@ -98,6 +98,33 @@ class _HomePageState extends State<HomePage> {
                   visible: state is CounterStateInvalidNumber,
                   child: Text('Invalid input: $invalidValue'),
                 ),
+                TextField(
+                  controller: _controller,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter a number here',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        context.read<CounterBloc>().add(
+                          DecrementEvent(_controller.text),
+                        );
+                      },
+                      child: const Text('-'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<CounterBloc>().add(
+                          IncrementEvent(_controller.text),
+                        );
+                      },
+                      child: const Text('+'),
+                    ),
+                  ],
+                ),
               ],
             );
           },
